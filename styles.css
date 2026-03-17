@@ -1,0 +1,123 @@
+/**
+ * Estilos para local_dragndrop - Estilo tipo jQuery UI Smoothness
+ *
+ * @package    local_dragndrop
+ * @copyright  2025
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* Bloque de curso */
+.course-block {
+    background: #fafafa;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    padding: 1em 1.5em;
+    margin-bottom: 1.5em;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.course-header {
+    margin: 0 0 0.75em 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.course-header a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.course-header a:hover {
+    text-decoration: underline;
+}
+
+/* Lista sortable - estilo smoothness */
+.dragndrop-categories.sortable-list {
+    list-style: none;
+    margin: 0.5em 0;
+    padding: 0;
+}
+
+.dragndrop-categories.sortable-list ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 1.5em;
+}
+
+.sortable-item {
+    margin: 2px 0;
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    cursor: move;
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.sortable-item:hover {
+    background: #f6f6f6;
+    border-color: #cccccc;
+}
+
+.sortable-item.dragging {
+    opacity: 0.85;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.sortable-list.drag-over {
+    outline: 2px dashed #0066cc;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.sortable-handle {
+    display: flex;
+    align-items: center;
+    padding: 0.4em 0.6em;
+    gap: 0.5em;
+}
+
+.handle-icon {
+    color: #999;
+    font-size: 0.9em;
+    cursor: grab;
+    user-select: none;
+}
+
+.handle-icon:active {
+    cursor: grabbing;
+}
+
+.sortable-item .category-name {
+    flex: 1;
+    color: #333;
+    text-decoration: none;
+}
+
+.sortable-item .category-name:hover {
+    color: #0066cc;
+}
+
+.btn-edit {
+    color: #666;
+    text-decoration: none;
+    padding: 0 0.3em;
+    font-size: 0.95em;
+}
+
+.btn-edit:hover {
+    color: #0066cc;
+}
+
+/* Profundidad visual para subcategorías */
+.dragndrop-categories[data-depth="1"] .sortable-item {
+    border-left: 3px solid #e0e0e0;
+}
+
+.dragndrop-categories[data-depth="2"] .sortable-item {
+    border-left: 3px solid #d0d0d0;
+}
+
+.dragndrop-categories[data-depth="3"] .sortable-item {
+    border-left: 3px solid #c0c0c0;
+}
