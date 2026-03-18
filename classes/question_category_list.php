@@ -12,19 +12,21 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+
+namespace local_dragndrop;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
- * Plugin version info.
+ * Lista de categorías que usa nuestro ítem con icono engranaje.
  *
  * @package    local_dragndrop
  * @copyright  2025
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class question_category_list extends \qbank_managecategories\question_category_list {
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'local_dragndrop';
-$plugin->version   = 2025031800;
-$plugin->requires  = 2024042200;  // Moodle 4.4.
-$plugin->maturity  = MATURITY_ALPHA;
+    /** @var string Nuestra clase de ítem con engranaje y borrar. */
+    public $listitemclassname = '\local_dragndrop\question_category_list_item';
+}

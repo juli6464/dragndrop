@@ -147,12 +147,15 @@ function local_dragndrop_build_tree(array $byparent, int $parentid): array {
 
 /**
  * Renderiza el árbol de categorías como HTML con estructura sortable.
+ * Usa icono engranaje para editar y papelera para eliminar.
  *
  * @param array $categories Árbol de categorías.
  * @param int $depth Profundidad actual.
  * @return string HTML.
  */
 function local_dragndrop_render_category_tree(array $categories, int $depth = 0): string {
+    global $OUTPUT;
+
     if (empty($categories)) {
         return '<ul class="dragndrop-categories sortable-list" data-depth="' . $depth . '"></ul>';
     }
@@ -160,21 +163,46 @@ function local_dragndrop_render_category_tree(array $categories, int $depth = 0)
     $html = '<ul class="dragndrop-categories sortable-list" data-depth="' . $depth . '">';
     foreach ($categories as $cat) {
         $context = context::instance_by_id($cat->contextid);
+        $courseid = ($context->contextlevel == CONTEXT_COURSE)
+            ? $context->instanceid
+            : (($ctx = $context->get_course_context(false)) ? $ctx->instanceid : 0);
+
         $name = format_string($cat->name, true, ['context' => $context]);
         $qcount = isset($cat->questioncount) ? (int) $cat->questioncount : 0;
         $qcountstr = $qcount > 0 ? ' (' . $qcount . ')' : '';
         $questionbankurl = new moodle_url('/question/edit.php', [
-            'courseid' => $context->instanceid,
+            'courseid' => $courseid ?: $context->instanceid,
             'cat' => $cat->id . ',' . $cat->contextid,
         ]);
         if ($context->contextlevel == CONTEXT_MODULE) {
             $questionbankurl->param('cmid', $context->instanceid);
             $questionbankurl->remove_params('courseid');
         }
+
+        $cid = $courseid ?: (($context->contextlevel == CONTEXT_COURSE) ? $context->instanceid : 0);
+
+        // Editar: category.php?courseid=X&edit=Y
         $editurl = new moodle_url('/question/bank/managecategories/category.php', [
-            'courseid' => $context->instanceid,
+            'courseid' => $cid,
             'edit' => $cat->id,
         ]);
+
+        // Eliminar: category.php?courseid=X&delete=Y&sesskey=Z (solo si se puede)
+        $deletehtml = '';
+        if ($cid && $cat->parent && class_exists('\qbank_managecategories\helper') &&
+                !\qbank_managecategories\helper::question_is_only_child_of_top_category_in_context($cat->id)) {
+            $deleteurl = new moodle_url('/question/bank/managecategories/category.php', [
+                'courseid' => $cid,
+                'delete' => $cat->id,
+                'sesskey' => sesskey(),
+            ]);
+            $deletehtml = '<a href="' . s($deleteurl->out(false)) . '" class="btn-delete" title="' .
+                s(get_string('delete')) . '">' . $OUTPUT->pix_icon('t/delete', get_string('delete'), 'core') . '</a>';
+        }
+
+        $editicon = $OUTPUT->pix_icon('i/settings', get_string('edit'), 'core');
+        $editlink = '<a href="' . s($editurl->out(false)) . '" class="btn-edit" title="' .
+            s(get_string('edit')) . '">' . $editicon . '</a>';
 
         $childrenhtml = local_dragndrop_render_category_tree($cat->children ?? [], $depth + 1);
 
@@ -182,7 +210,7 @@ function local_dragndrop_render_category_tree(array $categories, int $depth = 0)
         $html .= '<div class="sortable-handle">';
         $html .= '<span class="handle-icon">⋮⋮</span>';
         $html .= '<a href="' . s($questionbankurl->out(false)) . '" class="category-name">' . s($name) . $qcountstr . '</a>';
-        $html .= '<a href="' . s($editurl->out(false)) . '" class="btn-edit" title="' . s(get_string('edit')) . '">✎</a>';
+        $html .= $editlink . $deletehtml;
         $html .= '</div>';
         $html .= $childrenhtml;
         $html .= '</li>';

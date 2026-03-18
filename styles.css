@@ -1,10 +1,127 @@
 /**
- * Estilos para local_dragndrop - Estilo tipo jQuery UI Smoothness
+ * Estilos para local_dragndrop
+ * Incluye: vista category.php (árbol carpetas) + index.php (dragndrop)
  *
  * @package    local_dragndrop
  * @copyright  2025
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+/* ========== category.php: vista tipo mapeo de carpetas ========== */
+
+.local-dragndrop-container {
+    margin-top: 1.25rem;
+}
+
+.local-dragndrop-course-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.local-dragndrop-container h2:not(.local-dragndrop-course-name),
+.local-dragndrop-container .questioncategories > h3 {
+    display: none;
+}
+
+.local-dragndrop-container .questioncategories {
+    margin-top: 0;
+    padding: 1rem 1.25rem;
+    background: #fafbfc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.local-dragndrop-container .questioncategories ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+.local-dragndrop-container .questioncategories ul ul {
+    padding-left: 1.75rem;
+    margin-left: 0.5rem;
+    border-left: 2px solid #cbd5e1;
+}
+
+.local-dragndrop-container .questioncategories li {
+    position: relative;
+    padding: 0.5rem 0.5rem 0.5rem 1.75rem;
+    margin: 3px 0;
+    border-radius: 4px;
+}
+
+.local-dragndrop-container .questioncategories li::before {
+    content: "📁";
+    position: absolute;
+    left: 0;
+    font-size: 1em;
+}
+
+.local-dragndrop-container .questioncategories ul ul li::before {
+    content: "📂";
+}
+
+.local-dragndrop-container .questioncategories li:hover {
+    background: #f1f5f9;
+}
+
+.local-dragndrop-container .questioncategories li > b {
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.local-dragndrop-container .questioncategories li > b a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.local-dragndrop-container .questioncategories li > b a:hover {
+    text-decoration: underline;
+}
+
+.local-dragndrop-container .questioncategories li > div.text_to_html {
+    display: block;
+    margin: 0.2rem 0 0.5rem 0;
+    font-size: 0.9em;
+    color: #64748b;
+}
+
+/* Barra de acciones: borrar, editar, flechas - TODOS visibles */
+.local-dragndrop-container .questioncategories li > a {
+    display: inline-block !important;
+    margin-right: 0.25rem;
+    padding: 0.2rem;
+    border-radius: 4px;
+    vertical-align: middle;
+    min-width: 20px;
+}
+
+.local-dragndrop-container .questioncategories li > a:hover {
+    background: #e2e8f0;
+}
+
+/* Borrar (papelera) - siempre visible cuando existe */
+.local-dragndrop-container .questioncategories li > a.local-dragndrop-delete,
+.local-dragndrop-container .questioncategories li > a[href*="delete="] {
+    display: inline-block !important;
+}
+
+.local-dragndrop-container .questioncategories li img,
+.local-dragndrop-container .questioncategories li .icon {
+    margin: 0;
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    display: inline-block !important;
+}
+
+/* ========== index.php: dragndrop ========== */
 
 /* Bloque de curso */
 .course-block {
@@ -98,15 +215,23 @@
     color: #0066cc;
 }
 
-.btn-edit {
-    color: #666;
-    text-decoration: none;
+.btn-edit,
+.btn-delete {
+    display: inline-block;
     padding: 0 0.3em;
-    font-size: 0.95em;
+    margin-left: 0.25rem;
+    vertical-align: middle;
 }
 
-.btn-edit:hover {
-    color: #0066cc;
+.btn-edit img,
+.btn-delete img {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-edit:hover,
+.btn-delete:hover {
+    opacity: 0.8;
 }
 
 /* Profundidad visual para subcategorías */
