@@ -40,7 +40,8 @@ function local_dragndrop_redirect_if_managecategories(): void {
         return $v !== '' && $v !== null;
     });
 
-    $url = new moodle_url($CFG->wwwroot . '/local/dragndrop/category.php', $params);
+    // Redirigir a la vista con drag and drop (index.php), no a la vista con flechas (category.php).
+    $url = new moodle_url($CFG->wwwroot . '/local/dragndrop/index.php', $params);
     redirect($url);
     exit;
 }

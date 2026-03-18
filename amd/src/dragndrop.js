@@ -139,9 +139,12 @@ define(['jquery'], function($) {
             }
 
             var sortorder = siblings.indexOf(catId);
+            var insertBeforeIsChild = $insertBefore && $insertBefore.length &&
+                $insertBefore.parent()[0] === $targetList[0];
+
             saveMove(catId, ctxId, newParent, sortorder, function() {
                 $dropped.detach();
-                if ($insertBefore && $insertBefore.length) {
+                if (insertBeforeIsChild) {
                     $insertBefore.before($dropped);
                 } else {
                     $targetList.append($dropped);

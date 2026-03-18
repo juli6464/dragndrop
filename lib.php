@@ -146,6 +146,32 @@ function local_dragndrop_build_tree(array $byparent, int $parentid): array {
 }
 
 /**
+ * Comprueba si una categoría es descendiente de otra (para evitar ciclos al mover).
+ *
+ * @param int $potentialparent Id de la categoría en la que queremos mover.
+ * @param int $categoryid Id de la categoría que se mueve.
+ * @return bool True si potentialparent está dentro del árbol de categoryid.
+ */
+function local_dragndrop_is_descendant(int $potentialparent, int $categoryid): bool {
+    global $DB;
+
+    if ($potentialparent <= 0 || $potentialparent == $categoryid) {
+        return false;
+    }
+    $current = $potentialparent;
+    $visited = [];
+    while ($current > 0 && !isset($visited[$current])) {
+        if ($current == $categoryid) {
+            return true;
+        }
+        $visited[$current] = true;
+        $rec = $DB->get_record('question_categories', ['id' => $current], 'parent');
+        $current = $rec ? (int) $rec->parent : 0;
+    }
+    return false;
+}
+
+/**
  * Renderiza el árbol de categorías como HTML con estructura sortable.
  * Usa icono engranaje para editar y papelera para eliminar.
  *

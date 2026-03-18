@@ -152,6 +152,11 @@ if (is_null($param->edit)) {
 }
 echo $renderer->render($qbankaction);
 
+// Enlace a la vista con drag and drop
+$dragndropurl = new moodle_url('/local/dragndrop/index.php', ['courseid' => $COURSE->id]);
+echo html_writer::link($dragndropurl, get_string('viewdragndrop', 'local_dragndrop'),
+    ['class' => 'btn btn-secondary mb-3']);
+
 // Vista amigable: nombre del curso + contenido estándar
 echo html_writer::start_tag('div', ['class' => 'local-dragndrop-container']);
 
