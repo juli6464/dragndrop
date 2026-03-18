@@ -161,6 +161,31 @@
     padding-left: 1.5em;
 }
 
+/* Zona de soltar para convertir en subcategoría (lista vacía de hijos) */
+.sortable-item > ul.sortable-list.sortable-list-empty {
+    min-height: 36px;
+    margin: 4px 0 4px 0.5em;
+    padding: 6px 10px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 4px;
+    background: rgba(0, 102, 204, 0.04);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.sortable-item > ul.sortable-list.sortable-list-empty::before {
+    content: attr(data-placeholder);
+    display: block;
+    font-size: 0.85em;
+    color: #64748b;
+    pointer-events: none;
+}
+
+.sortable-item > ul.sortable-list.sortable-list-empty:hover,
+.sortable-item > ul.sortable-list.sortable-list-empty.drag-over {
+    border-color: #0066cc;
+    background: rgba(0, 102, 204, 0.08);
+}
+
 .sortable-item {
     margin: 2px 0;
     background: #ffffff;

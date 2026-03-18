@@ -34,3 +34,4 @@ $string['orderupdated'] = 'Orden actualizado correctamente';
 $string['errorupdating'] = 'Error al actualizar el orden';
 $string['viewdragndrop'] = 'Ver con arrastrar y soltar';
 $string['backtostandard'] = 'Volver a la vista estándar';
+$string['dropheresubcategory'] = 'Soltar aquí para hacer subcategoría';

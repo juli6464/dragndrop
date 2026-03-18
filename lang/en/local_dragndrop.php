@@ -34,3 +34,4 @@ $string['orderupdated'] = 'Order updated successfully';
 $string['errorupdating'] = 'Error updating order';
 $string['viewdragndrop'] = 'View with drag and drop';
 $string['backtostandard'] = 'Back to standard view';
+$string['dropheresubcategory'] = 'Drop here to make subcategory';

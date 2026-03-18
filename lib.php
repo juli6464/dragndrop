@@ -183,7 +183,9 @@ function local_dragndrop_render_category_tree(array $categories, int $depth = 0)
     global $OUTPUT;
 
     if (empty($categories)) {
-        return '<ul class="dragndrop-categories sortable-list" data-depth="' . $depth . '"></ul>';
+        $placeholder = get_string('dropheresubcategory', 'local_dragndrop');
+        return '<ul class="dragndrop-categories sortable-list sortable-list-empty" data-depth="' . $depth .
+            '" data-placeholder="' . s($placeholder) . '"></ul>';
     }
 
     $html = '<ul class="dragndrop-categories sortable-list" data-depth="' . $depth . '">';

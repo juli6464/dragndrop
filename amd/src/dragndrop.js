@@ -143,11 +143,16 @@ define(['jquery'], function($) {
                 $insertBefore.parent()[0] === $targetList[0];
 
             saveMove(catId, ctxId, newParent, sortorder, function() {
+                var $oldList = $dropped.parent();
                 $dropped.detach();
                 if (insertBeforeIsChild) {
                     $insertBefore.before($dropped);
                 } else {
                     $targetList.append($dropped);
+                }
+                $targetList.removeClass('sortable-list-empty');
+                if ($oldList.hasClass('sortable-list') && $oldList.children('.sortable-item').length === 0) {
+                    $oldList.addClass('sortable-list-empty');
                 }
                 initSortable($targetList);
             }, function() {
