@@ -31,3 +31,16 @@ Requiere la capacidad `moodle/question:managecategory` en el contexto del curso.
 - `lib.php` - Funciones de datos y render
 - `amd/src/dragndrop.js` - Lógica drag and drop (HTML5 API)
 - `styles.css` - Estilos tipo Smoothness
+
+## Agregar botón de Arrastrar y soltar categorias
+- Agrega  Debajo de echo $renderer->render($qbankaction);
+
+// Botón hacia /local/dragndrop/index.php
+$dragndropurl = new moodle_url('/local/dragndrop/index.php');
+
+//  link drag n drop:
+echo html_writer::link(
+    $dragndropurl,
+    'Arrastrar y soltar categorías',
+    ['class' => 'btn btn-secondary', 'style' => 'margin-top: 5px; margin-bottom: 10px;']
+); `
