@@ -32,7 +32,8 @@ Requiere la capacidad `moodle/question:managecategory` en el contexto del curso.
 - `amd/src/dragndrop.js` - Lógica drag and drop ([SortableJS](https://sortablejs.github.io/Sortable/) para listas anidadas)
 - `styles.css` - Estilos tipo Smoothness
 
-## Agregar botón de Arrastrar y soltar categorias
+## Agregar botón de Arrastrar y soltar categorias en moodle/question/bank/managecategories/category.php
+
 - Agrega  Debajo de echo $renderer->render($qbankaction);
 
 // Botón hacia /local/dragndrop/index.php
