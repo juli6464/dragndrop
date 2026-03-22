@@ -62,6 +62,7 @@ if (empty($courses)) {
 }
 
 $PAGE->requires->css('/local/dragndrop/styles.css');
+$PAGE->requires->js('/local/dragndrop/js/sortable.min.js', true);
 $PAGE->requires->js_call_amd('local_dragndrop/dragndrop', 'init', [
     $CFG->wwwroot . '/local/dragndrop/ajax.php',
     sesskey(),

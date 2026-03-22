@@ -29,7 +29,7 @@ Requiere la capacidad `moodle/question:managecategory` en el contexto del curso.
 - `index.php` - Página principal
 - `ajax.php` - Endpoint AJAX para guardar movimientos
 - `lib.php` - Funciones de datos y render
-- `amd/src/dragndrop.js` - Lógica drag and drop (HTML5 API)
+- `amd/src/dragndrop.js` - Lógica drag and drop ([SortableJS](https://sortablejs.github.io/Sortable/) para listas anidadas)
 - `styles.css` - Estilos tipo Smoothness
 
 ## Agregar botón de Arrastrar y soltar categorias
