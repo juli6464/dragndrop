@@ -136,6 +136,17 @@
     margin-bottom: 0;
 }
 
+/* Espacio entre la etiqueta «Curso» y el desplegable */
+.local-dragndrop-toolbar .singleselect form.d-flex {
+    column-gap: 0.625rem;
+    row-gap: 0.25rem;
+}
+
+.local-dragndrop-toolbar .singleselect form label {
+    margin-bottom: 0;
+    padding-right: 0.125rem;
+}
+
 .local-dragndrop-toolbar .local-dragndrop-back-standard {
     flex-shrink: 0;
 }
