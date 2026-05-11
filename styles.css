@@ -123,6 +123,23 @@
 
 /* ========== index.php: dragndrop ========== */
 
+/* Fila superior: selector de curso + acciones (alineados, con espacio) */
+.local-dragndrop-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.local-dragndrop-toolbar > .singleselect {
+    margin-bottom: 0;
+}
+
+.local-dragndrop-toolbar .local-dragndrop-back-standard {
+    flex-shrink: 0;
+}
+
 /* Bloque de curso */
 .course-block {
     background: #fafafa;
@@ -148,6 +165,19 @@
     text-decoration: underline;
 }
 
+.course-block-system {
+    border-left: 4px solid #94a3b8;
+    background: #f8fafc;
+}
+
+.local-dragndrop-course-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
 /* Lista sortable - estilo smoothness */
 .dragndrop-categories.sortable-list {
     list-style: none;
@@ -161,7 +191,12 @@
     padding-left: 1.5em;
 }
 
-/* Zona de soltar para convertir en subcategoría (lista vacía de hijos) */
+/* Zona de soltar en la lista raíz del bloque (subir ítems desde subniveles) */
+.course-block > ul.dragndrop-categories[data-dragndrop-root="1"] {
+    min-height: 2.25rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
+}
 .sortable-item > ul.sortable-list.sortable-list-empty {
     min-height: 36px;
     margin: 4px 0 4px 0.5em;
@@ -180,6 +215,29 @@
     pointer-events: none;
 }
 
+/* Durante el arrastre: evita parpadeo al cruzar lista raíz vs sublista / zona punteada. */
+.local-dragndrop-is-dragging .sortable-item > ul.sortable-list.sortable-list-empty {
+    transition: none !important;
+}
+
+.local-dragndrop-is-dragging .sortable-item > ul.sortable-list.sortable-list-empty:hover,
+.local-dragndrop-is-dragging .sortable-item > ul.sortable-list.sortable-list-empty.drag-over {
+    border-color: #cbd5e1;
+    background: rgba(0, 102, 204, 0.04);
+}
+
+.local-dragndrop-is-dragging ul.dragndrop-categories.sortable-list {
+    outline: none !important;
+}
+
+.local-dragndrop-is-dragging .sortable-item {
+    transition: none;
+}
+
+.local-dragndrop-is-dragging .sortable-list.drag-over {
+    outline: none !important;
+}
+
 .sortable-item > ul.sortable-list.sortable-list-empty:hover,
 .sortable-item > ul.sortable-list.sortable-list-empty.drag-over {
     border-color: #0066cc;
@@ -191,8 +249,13 @@
     background: #ffffff;
     border: 1px solid #dddddd;
     border-radius: 4px;
-    cursor: move;
+    cursor: default;
     transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.sortable-item.sortable-chosen .handle-icon,
+.sortable-item.sortable-ghost .handle-icon {
+    cursor: move;
 }
 
 .sortable-item:hover {
@@ -217,23 +280,103 @@
     align-items: center;
     padding: 0.4em 0.6em;
     gap: 0.5em;
+    cursor: default;
+}
+
+.dragndrop-tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.625rem;
+    min-width: 1.625rem;
+    height: 1.625rem;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #475569;
+    cursor: pointer;
+    border-radius: 4px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.dragndrop-tree-toggle:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    color: #1e293b;
+}
+
+.dragndrop-tree-toggle:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 1px;
+}
+
+.dragndrop-tree-toggle .icon {
+    margin: 0;
+}
+
+.dragndrop-tree-icon-when-open .icon,
+.dragndrop-tree-icon-when-closed .icon {
+    margin: 0;
+}
+
+.sortable-item:not(.is-collapsed) .dragndrop-tree-icon-when-closed {
+    display: none !important;
+}
+
+.sortable-item.is-collapsed .dragndrop-tree-icon-when-open {
+    display: none !important;
+}
+
+.dragndrop-tree-toggle-spacer {
+    display: inline-block;
+    width: 1.625rem;
+    min-width: 1.625rem;
+    flex-shrink: 0;
+}
+
+/* Sublista con ítems: el ul no intercepta el puntero; cada li sí (reordenar dentro).
+   Los huecos y el margen dejan actuar al ul padre → subir al nivel raíz/padre solo con DnD. */
+.sortable-item > ul.dragndrop-categories:not(.sortable-list-empty) {
+    pointer-events: none;
+}
+
+.sortable-item > ul.dragndrop-categories:not(.sortable-list-empty) > li.sortable-item {
+    pointer-events: auto;
+}
+
+.sortable-item.is-collapsed > ul.sortable-list {
+    display: none;
 }
 
 .handle-icon {
-    color: #999;
-    font-size: 0.9em;
-    cursor: grab;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: #64748b;
+    cursor: move;
     user-select: none;
 }
 
 .handle-icon:active {
-    cursor: grabbing;
+    cursor: move;
+}
+
+.handle-icon .icon {
+    margin: 0;
+}
+
+.sortable-item .btn-edit,
+.sortable-item .btn-delete {
+    cursor: pointer;
 }
 
 .sortable-item .category-name {
     flex: 1;
     color: #333;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .sortable-item .category-name:hover {

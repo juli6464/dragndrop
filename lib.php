@@ -69,6 +69,7 @@ function local_dragndrop_get_courses_with_categories(int $courseid = 0): array {
             'shortname' => $course->shortname,
             'categories' => $categories,
             'topcategoryid' => $topcategoryid,
+            'questioncontextid' => $context->id,
         ];
     }
 
@@ -127,6 +128,27 @@ function local_dragndrop_get_categories_tree(int $contextid): array {
 }
 
 /**
+ * Cursos donde el usuario puede gestionar categorías (para el selector).
+ *
+ * @return array Lista de objetos curso de Moodle ordenados por nombre.
+ */
+function local_dragndrop_get_manageable_courses_for_selector(): array {
+    $allcourses = get_courses();
+    $courselist = [];
+    foreach ($allcourses as $c) {
+        if ($c->id == SITEID) {
+            continue;
+        }
+        $ctx = context_course::instance($c->id);
+        if (has_capability('moodle/question:managecategory', $ctx)) {
+            $courselist[] = $c;
+        }
+    }
+    core_collator::asort_objects_by_property($courselist, 'fullname');
+    return $courselist;
+}
+
+/**
  * Construye el árbol recursivo de categorías.
  *
  * @param array $byparent Mapa parent_id => [hijos].
@@ -182,18 +204,24 @@ function local_dragndrop_is_descendant(int $potentialparent, int $categoryid): b
 function local_dragndrop_render_category_tree(array $categories, int $depth = 0): string {
     global $OUTPUT;
 
+    $rootattr = ($depth === 0) ? ' data-dragndrop-root="1"' : '';
+
     if (empty($categories)) {
         $placeholder = get_string('dropheresubcategory', 'local_dragndrop');
-        return '<ul class="dragndrop-categories sortable-list sortable-list-empty" data-depth="' . $depth .
-            '" data-placeholder="' . s($placeholder) . '"></ul>';
+        return '<ul class="dragndrop-categories sortable-list sortable-list-empty" data-depth="' . $depth . '"' .
+            $rootattr .
+            ' data-placeholder="' . s($placeholder) . '"></ul>';
     }
 
-    $html = '<ul class="dragndrop-categories sortable-list" data-depth="' . $depth . '">';
+    $html = '<ul class="dragndrop-categories sortable-list" data-depth="' . $depth . '"' . $rootattr . '>';
     foreach ($categories as $cat) {
         $context = context::instance_by_id($cat->contextid);
         $courseid = ($context->contextlevel == CONTEXT_COURSE)
             ? $context->instanceid
             : (($ctx = $context->get_course_context(false)) ? $ctx->instanceid : 0);
+        if ($context->contextlevel == CONTEXT_SYSTEM) {
+            $courseid = SITEID;
+        }
 
         $name = format_string($cat->name, true, ['context' => $context]);
         $qcount = isset($cat->questioncount) ? (int) $cat->questioncount : 0;
@@ -233,10 +261,36 @@ function local_dragndrop_render_category_tree(array $categories, int $depth = 0)
             s(get_string('edit')) . '">' . $editicon . '</a>';
 
         $childrenhtml = local_dragndrop_render_category_tree($cat->children ?? [], $depth + 1);
+        $haschildren = !empty($cat->children);
 
-        $html .= '<li class="sortable-item" data-categoryid="' . s($cat->id) . '" data-contextid="' . s($cat->contextid) . '">';
+        $togglehtml = '';
+        if ($haschildren) {
+            $titleexpand = get_string('expandcategory', 'local_dragndrop');
+            $titlecollapse = get_string('collapsecategory', 'local_dragndrop');
+            $togglehtml = '<button type="button" class="dragndrop-tree-toggle" aria-expanded="true"' .
+                ' title="' . s($titlecollapse) . '"' .
+                ' aria-label="' . s($titlecollapse) . '"' .
+                ' data-title-expanded="' . s($titlecollapse) . '"' .
+                ' data-title-collapsed="' . s($titleexpand) . '">';
+            $togglehtml .= '<span class="dragndrop-tree-icon-when-open">' .
+                $OUTPUT->pix_icon('t/expanded', $titlecollapse, 'core') . '</span>';
+            $togglehtml .= '<span class="dragndrop-tree-icon-when-closed">' .
+                $OUTPUT->pix_icon('t/collapsed', $titleexpand, 'core') . '</span>';
+            $togglehtml .= '</button>';
+        } else {
+            $togglehtml = '<span class="dragndrop-tree-toggle-spacer" aria-hidden="true"></span>';
+        }
+
+        $liclasses = 'sortable-item';
+        if ($haschildren) {
+            $liclasses .= ' sortable-item--branch';
+        }
+
+        $html .= '<li class="' . $liclasses . '" data-categoryid="' . s($cat->id) . '" data-contextid="' . s($cat->contextid) . '">';
         $html .= '<div class="sortable-handle">';
-        $html .= '<span class="handle-icon">⋮⋮</span>';
+        $html .= $togglehtml;
+        $html .= '<span class="handle-icon" role="img" aria-label="' . s(get_string('dragtoorder', 'local_dragndrop')) . '">' .
+            $OUTPUT->pix_icon('i/move_2d', get_string('dragtoorder', 'local_dragndrop'), 'core') . '</span>';
         $html .= '<a href="' . s($questionbankurl->out(false)) . '" class="category-name">' . s($name) . $qcountstr . '</a>';
         $html .= $editlink . $deletehtml;
         $html .= '</div>';
@@ -245,4 +299,14 @@ function local_dragndrop_render_category_tree(array $categories, int $depth = 0)
     }
     $html .= '</ul>';
     return $html;
+}
+
+/**
+ * Tras cargar la configuración: enviar «gestionar categorías» al drag and drop si aplica.
+ */
+function local_dragndrop_after_config(): void {
+    global $CFG;
+
+    require_once($CFG->dirroot . '/local/dragndrop/redirect.php');
+    local_dragndrop_redirect_if_managecategories();
 }

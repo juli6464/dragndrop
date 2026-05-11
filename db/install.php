@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version info.
+ * Instalación del plugin.
  *
  * @package    local_dragndrop
  * @copyright  2025
@@ -24,7 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_dragndrop';
-$plugin->version   = 2025050822;
-$plugin->requires  = 2024042200;  // Moodle 4.4.
-$plugin->maturity  = MATURITY_ALPHA;
+/**
+ * Valores por defecto de la política de jerarquía (curso → tema → test).
+ */
+function xmldb_local_dragndrop_install() {
+    set_config('enforce_question_depth', 1, 'local_dragndrop');
+    set_config('min_question_category_depth', 3, 'local_dragndrop');
+}

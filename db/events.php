@@ -12,10 +12,10 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version info.
+ * Suscripción a eventos.
  *
  * @package    local_dragndrop
  * @copyright  2025
@@ -24,7 +24,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_dragndrop';
-$plugin->version   = 2025050822;
-$plugin->requires  = 2024042200;  // Moodle 4.4.
-$plugin->maturity  = MATURITY_ALPHA;
+$observers = [
+    [
+        'eventname' => '\core\event\question_created',
+        'callback' => '\local_dragndrop\observer::question_created',
+    ],
+    [
+        'eventname' => '\core\event\question_updated',
+        'callback' => '\local_dragndrop\observer::question_updated',
+    ],
+    [
+        'eventname' => '\core\event\course_module_deleted',
+        'callback' => '\local_dragndrop\observer::course_module_deleted',
+    ],
+    [
+        'eventname' => '\core\event\course_deleted',
+        'callback' => '\local_dragndrop\observer::course_deleted',
+    ],
+];

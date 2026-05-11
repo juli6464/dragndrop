@@ -72,10 +72,38 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('pluginname', 'local_dragndrop'));
 
-// Enlace a vista estándar si estamos en un curso.
+$toolbarhtml = '';
+$selectorcourses = local_dragndrop_get_manageable_courses_for_selector();
+if (count($selectorcourses) > 0) {
+    $courseoptions = [0 => get_string('allcourses', 'local_dragndrop')];
+    foreach ($selectorcourses as $c) {
+        $courseoptions[$c->id] = format_string($c->fullname);
+    }
+    $selecturl = new moodle_url('/local/dragndrop/index.php');
+    $toolbarhtml .= $OUTPUT->single_select(
+        $selecturl,
+        'courseid',
+        $courseoptions,
+        $courseid,
+        null,
+        null,
+        ['label' => get_string('selectcourse', 'local_dragndrop')]
+    );
+}
+
+// Enlace a vista estándar si estamos en un curso (standardview evita redirección automática al drag n drop).
 if ($courseid) {
-    $standardurl = new moodle_url('/question/bank/managecategories/category.php', ['courseid' => $courseid]);
-    echo html_writer::link($standardurl, get_string('backtostandard', 'local_dragndrop'), ['class' => 'btn btn-secondary mb-3']);
+    $standardurl = new moodle_url('/question/bank/managecategories/category.php', [
+        'courseid' => $courseid,
+        'standardview' => 1,
+    ]);
+    $toolbarhtml .= html_writer::link($standardurl, get_string('backtostandard', 'local_dragndrop'), [
+        'class' => 'btn btn-secondary btn-sm local-dragndrop-back-standard',
+    ]);
+}
+
+if ($toolbarhtml !== '') {
+    echo html_writer::div($toolbarhtml, 'local-dragndrop-toolbar');
 }
 
 foreach ($courses as $courseobj) {
@@ -83,15 +111,55 @@ foreach ($courses as $courseobj) {
     if (!empty($courseobj->topcategoryid)) {
         $blockattr['data-topcategoryid'] = $courseobj->topcategoryid;
     }
+    if (!empty($courseobj->questioncontextid)) {
+        $blockattr['data-sortable-group'] = 'ctx-' . $courseobj->questioncontextid;
+    }
+    $addcategoryurl = new moodle_url('/question/bank/managecategories/category.php', [
+        'courseid' => $courseobj->id,
+        'edit' => 0,
+    ]);
+    $toolbar = html_writer::div(
+        html_writer::link($addcategoryurl, get_string('addcategory', 'question'), ['class' => 'btn btn-primary btn-sm']),
+        'local-dragndrop-course-actions'
+    );
     echo html_writer::div(
         html_writer::tag('h3', html_writer::link(
             new moodle_url('/local/dragndrop/index.php', ['courseid' => $courseobj->id]),
             format_string($courseobj->fullname)
         ), ['class' => 'course-header']) .
+        $toolbar .
         local_dragndrop_render_category_tree($courseobj->categories),
         'course-block',
         $blockattr
     );
+}
+
+if ($courseid) {
+    $systemcontext = context_system::instance();
+    if (has_capability('moodle/question:managecategory', $systemcontext)) {
+        list($systemcategories, $systemtopid) = local_dragndrop_get_categories_tree($systemcontext->id);
+        $systemblockattr = [
+            'data-courseid' => SITEID,
+            'data-system-block' => '1',
+            'data-topcategoryid' => $systemtopid,
+            'data-sortable-group' => 'ctx-' . $systemcontext->id,
+        ];
+        $systemaddurl = new moodle_url('/question/bank/managecategories/category.php', [
+            'courseid' => SITEID,
+            'edit' => 0,
+        ]);
+        $systemtoolbar = html_writer::div(
+            html_writer::link($systemaddurl, get_string('addcategory', 'question'), ['class' => 'btn btn-primary btn-sm']),
+            'local-dragndrop-course-actions'
+        );
+        echo html_writer::div(
+            html_writer::tag('h3', get_string('systemquestioncategories', 'local_dragndrop'), ['class' => 'course-header']) .
+            $systemtoolbar .
+            local_dragndrop_render_category_tree($systemcategories),
+            'course-block course-block-system',
+            $systemblockattr
+        );
+    }
 }
 
 echo $OUTPUT->footer();

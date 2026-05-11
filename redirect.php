@@ -15,8 +15,10 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redirige la vista estándar de categorías a la vista amigable del plugin.
- * Incluir al final de config.php: require_once($CFG->dirroot.'/local/dragndrop/redirect.php');
+ * Redirige la vista estándar de categorías a la vista con drag and drop cuando es solo navegación.
+ *
+ * Se invoca desde {@see local_dragndrop_after_config()} (sin editar config.php).
+ * Para forzar la vista Moodle clásica: ?standardview=1 (usa el enlace «Volver a la vista estándar»).
  *
  * @package    local_dragndrop
  * @copyright  2025
@@ -25,23 +27,45 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Si la petición es GET a managecategories/category.php sin acciones de edición/mover/borrar,
+ * redirige a local/dragndrop/index.php con los mismos parámetros de contexto (courseid, cmid…).
+ */
 function local_dragndrop_redirect_if_managecategories(): void {
-    global $CFG;
+    if (PHP_SAPI === 'cli') {
+        return;
+    }
+
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
+        return;
+    }
 
     $uri = $_SERVER['REQUEST_URI'] ?? '';
     if (strpos($uri, 'managecategories/category.php') === false) {
         return;
     }
 
-    $allowed = ['courseid', 'cmid', 'cat', 'category', 'cpage', 'edit', 'delete', 'moveup', 'movedown',
-        'moveupcontext', 'movedowncontext', 'tocontext', 'left', 'right', 'move', 'moveto', 'confirm', 'sesskey'];
-    $params = array_intersect_key($_GET, array_flip($allowed));
+    if (!empty($_GET['standardview'])) {
+        return;
+    }
+
+    $blockkeys = [
+        'edit', 'delete', 'confirm', 'moveup', 'movedown', 'moveupcontext', 'movedowncontext',
+        'tocontext', 'left', 'right', 'move', 'moveto',
+    ];
+    foreach ($blockkeys as $key) {
+        if (isset($_GET[$key]) && $_GET[$key] !== '') {
+            return;
+        }
+    }
+
+    $passthrough = ['courseid', 'cmid', 'cat', 'category', 'cpage'];
+    $params = array_intersect_key($_GET, array_flip($passthrough));
     $params = array_filter($params, function ($v) {
         return $v !== '' && $v !== null;
     });
 
-    // Redirigir a la vista con drag and drop (index.php), no a la vista con flechas (category.php).
-    $url = new moodle_url($CFG->wwwroot . '/local/dragndrop/index.php', $params);
+    $url = new moodle_url('/local/dragndrop/index.php', $params);
     redirect($url);
     exit;
 }
