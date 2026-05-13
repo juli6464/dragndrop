@@ -25,6 +25,19 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Indica si existen las tablas de taxonomía del curso (tras actualizar Moodle).
+ *
+ * @return bool
+ */
+function local_dragndrop_course_taxonomy_tables_ready(): bool {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+    return $dbman->table_exists(new xmldb_table('local_dragndrop_course_cat'))
+        && $dbman->table_exists(new xmldb_table('local_dragndrop_quiz_place'));
+}
+
+/**
  * Obtiene cursos con sus categorías de preguntas.
  *
  * @param int $courseid Si se especifica, solo devuelve ese curso (si el usuario tiene acceso).
@@ -191,6 +204,49 @@ function local_dragndrop_is_descendant(int $potentialparent, int $categoryid): b
         $current = $rec ? (int) $rec->parent : 0;
     }
     return false;
+}
+
+/**
+ * Profundidad mínima de categoría de pregunta respecto al tope del contexto (plugin setting).
+ *
+ * @return int
+ */
+function local_dragndrop_get_min_question_category_depth(): int {
+    $min = (int) get_config('local_dragndrop', 'min_question_category_depth');
+    return $min > 0 ? $min : 3;
+}
+
+/**
+ * Número de niveles desde la categoría hasta el tope del banco (excluye el tope).
+ *
+ * @param int $categoryid
+ * @param int $topcategoryid
+ * @return int 0 si no hay cadena válida hasta el tope
+ */
+function local_dragndrop_category_depth_below_top(int $categoryid, int $topcategoryid): int {
+    global $DB;
+
+    if ($categoryid <= 0 || $topcategoryid <= 0) {
+        return 0;
+    }
+
+    $depth = 0;
+    $current = $categoryid;
+    $guard = 0;
+    while ($current > 0 && $guard < 200) {
+        $guard++;
+        if ($current === $topcategoryid) {
+            return $depth;
+        }
+        $rec = $DB->get_record('question_categories', ['id' => $current], 'parent', IGNORE_MISSING);
+        if (!$rec) {
+            return 0;
+        }
+        $current = (int) $rec->parent;
+        $depth++;
+    }
+
+    return 0;
 }
 
 /**

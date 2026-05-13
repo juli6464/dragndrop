@@ -34,6 +34,26 @@ require_once(__DIR__ . '/../lib.php');
 class observer {
 
     /**
+     * Comprueba tablas de taxonomía sin depender de funciones globales (evita fallos de resolución en namespace).
+     *
+     * @return bool
+     */
+    private static function course_taxonomy_tables_exist(): bool {
+        global $DB;
+
+        static $result = null;
+        if ($result !== null) {
+            return $result;
+        }
+
+        $dbman = $DB->get_manager();
+        $result = $dbman->table_exists(new \xmldb_table('local_dragndrop_course_cat'))
+            && $dbman->table_exists(new \xmldb_table('local_dragndrop_quiz_place'));
+
+        return $result;
+    }
+
+    /**
      * Tras crear una pregunta.
      *
      * @param \core\event\question_created $event
@@ -75,8 +95,8 @@ class observer {
             return;
         }
 
-        $min = local_dragndrop_get_min_question_category_depth();
-        $depth = local_dragndrop_category_depth_below_top($categoryid, (int) $top->id);
+        $min = \local_dragndrop_get_min_question_category_depth();
+        $depth = \local_dragndrop_category_depth_below_top($categoryid, (int) $top->id);
         if ($depth > 0 && $depth < $min) {
             throw new \moodle_exception('errorquestiondepth', 'local_dragndrop', '', $min);
         }
@@ -90,7 +110,7 @@ class observer {
     public static function course_module_deleted(\core\event\course_module_deleted $event): void {
         global $DB;
 
-        if (!local_dragndrop_course_taxonomy_tables_ready()) {
+        if (!self::course_taxonomy_tables_exist()) {
             return;
         }
 
@@ -106,7 +126,7 @@ class observer {
     public static function course_deleted(\core\event\course_deleted $event): void {
         global $DB;
 
-        if (!local_dragndrop_course_taxonomy_tables_ready()) {
+        if (!self::course_taxonomy_tables_exist()) {
             return;
         }
 

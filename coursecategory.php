@@ -42,7 +42,7 @@ $coursecontext = context_course::instance($courseid);
 require_login($course);
 require_capability('moodle/question:managecategory', $coursecontext);
 
-if (!local_dragndrop_course_taxonomy_tables_ready()) {
+if (!\local_dragndrop_course_taxonomy_tables_ready()) {
     throw new moodle_exception('taxonomy_tables_missing', 'local_dragndrop');
 }
 
