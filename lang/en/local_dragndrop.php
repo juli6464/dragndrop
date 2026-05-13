@@ -40,3 +40,4 @@ $string['allcourses'] = 'All courses';
 $string['systemquestioncategories'] = 'Question categories (System)';
 $string['expandcategory'] = 'Expand subcategories';
 $string['collapsecategory'] = 'Collapse subcategories';
+$string['openwithdragndrop'] = 'Open with drag and drop';

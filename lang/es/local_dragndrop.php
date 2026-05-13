@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Arrastrar y soltar categorías';
+$string['pluginname'] = 'Drag n drop preguntas';
 $string['dragndrop:manage'] = 'Gestionar categorías de preguntas con arrastrar y soltar';
 $string['categoriesbydragndrop'] = 'Categorías con arrastrar y soltar';
 $string['coursesandcategories'] = 'Cursos y categorías';
@@ -40,3 +40,4 @@ $string['allcourses'] = 'Todos los cursos';
 $string['systemquestioncategories'] = 'Categorías de pregunta (Sistema)';
 $string['expandcategory'] = 'Expandir subcategorías';
 $string['collapsecategory'] = 'Contraer subcategorías';
+$string['openwithdragndrop'] = 'Abrir Drag n drop preguntas';
